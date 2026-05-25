@@ -22,8 +22,8 @@ if (Test-Path ".venv\Scripts\Activate.ps1") {
 $env:PYTHONIOENCODING = "utf-8"
 python -c "from backend.database import init_db; init_db()" 2>$null
 
-Write-Host "[OK] Starting TuFlow backend on http://localhost:8000"
-Write-Host "[OK] API docs: http://localhost:8000/docs"
+Write-Host "[OK] Starting TuFlow backend on http://localhost:8001"
+Write-Host "[OK] API docs: http://localhost:8001/docs"
 Write-Host ""
 
-uvicorn backend.main:app --reload --port 8000
+uvicorn backend.main:app --reload --port 8001

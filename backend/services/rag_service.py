@@ -254,15 +254,19 @@ def get_status() -> dict:
             laws_loaded = []
 
         return {
-            "doc_count":   count,
-            "laws_loaded": laws_loaded,
-            "model":       f"sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
-            "chroma_path": _settings.chroma_db_path,
+            "doc_count":    count,
+            "laws_loaded":  laws_loaded,
+            "embed_model":  "paraphrase-multilingual-mpnet-base-v2",  # 向量化／檢索用
+            "llm_model":    _settings.groq_model,                     # 答案生成用
+            "model":        "paraphrase-multilingual-mpnet-base-v2",   # 向下相容
+            "chroma_path":  _settings.chroma_db_path,
         }
     except Exception as e:
         return {
             "doc_count":   0,
             "laws_loaded": [],
+            "embed_model": "未載入",
+            "llm_model":   _settings.groq_model,
             "model":       "未載入",
             "chroma_path": _settings.chroma_db_path,
             "error":       str(e),

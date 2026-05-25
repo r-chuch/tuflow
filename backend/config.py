@@ -46,5 +46,13 @@ class Settings(BaseSettings):
 
 @lru_cache()
 def get_settings() -> Settings:
-    """取得快取的設定實例（整個應用共用）"""
-    return Settings()
+    """取得快取的設定實例（整個應用共用）
+
+    注意：修改 .env 後必須重啟後端才能生效（lru_cache 在程序存活期間不會重新讀取）
+    """
+    s = Settings()
+    # 啟動時警告：API 金鑰未設定
+    if not s.groq_api_key:
+        import sys
+        print("[WARN] GROQ_API_KEY not set - LLM features disabled (set in .env)", file=sys.stderr)
+    return s

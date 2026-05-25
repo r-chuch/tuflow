@@ -71,19 +71,34 @@ export default function ChatScene() {
         return next
       })
     } catch (err) {
-      // 後端離線 → 嘗試 Demo 資料
+      // 後端離線或 LLM 失敗 → 嘗試 Demo 資料
+      console.warn('[TuFlow] RAG query failed:', err.message)
       const demoData = await getDemoQA().catch(() => [])
       const demo = demoData.find(d =>
         q.includes(d.question.slice(0, 6)) || d.question.includes(q.slice(0, 6))
       )
+
+      // 判斷失敗類型給使用者更清楚的提示
+      let fallbackNote = ''
+      if (err.message?.includes('GROQ_API_KEY')) {
+        fallbackNote = '\n\n⚠️ 後端 GROQ_API_KEY 未設定，請檢查 .env 並重啟後端。'
+      } else if (err.message?.includes('fetch') || err.message?.includes('Failed')) {
+        fallbackNote = '\n\n⚠️ 無法連接後端（port 8001），請確認後端已啟動。'
+      } else if (err.message) {
+        fallbackNote = `\n\n⚠️ 後端錯誤：${err.message}`
+      }
+
       setMessages(prev => {
         const next = [...prev]
         next[next.length - 1] = {
           role: 'ai',
-          text: demo?.answer || `抱歉，目前無法連接 AI 服務。\n\n請確認後端是否啟動：\nuvicorn backend.main:app --reload`,
+          text: demo
+            ? demo.answer + (fallbackNote ? `\n\n---\n📋 以上為示範資料${fallbackNote}` : '')
+            : `抱歉，目前無法取得 AI 回應。${fallbackNote}\n\n啟動後端：\nuvicorn backend.main:app --reload --port 8001`,
           lawRefs: demo?.law_refs || [],
           confidence: demo?.confidence,
           suggestedAction: demo?.suggested_action,
+          isDemo: true,
         }
         return next
       })
@@ -205,21 +220,40 @@ export default function ChatScene() {
           </div>
           {ragStatus ? (
             <>
+              {/* 已載入條文數 */}
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, padding: '4px 0', borderBottom: '1px solid var(--border)' }}>
                 <span style={{ color: 'var(--muted2)' }}>已載入條文</span>
                 <span style={{ color: 'var(--green)', fontWeight: 600 }}>{ragStatus.doc_count} 條</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, padding: '4px 0', borderBottom: '1px solid var(--border)' }}>
-                <span style={{ color: 'var(--muted2)' }}>模型</span>
-                <span style={{ color: 'var(--text-hi)', fontFamily: "'DM Mono',monospace", fontSize: 10 }}>
-                  {ragStatus.model?.split('/').pop() || 'N/A'}
-                </span>
-              </div>
-              {(ragStatus.laws_loaded || []).map(law => (
-                <div key={law} style={{ fontSize: 10.5, color: 'var(--muted2)', padding: '3px 0', display: 'flex', gap: 5 }}>
-                  <span style={{ color: 'var(--green)' }}>✓</span> {law}
+
+              {/* LLM 答案生成模型 */}
+              <div style={{ padding: '6px 0 2px' }}>
+                <div style={{ fontSize: 9, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.5px', marginBottom: 3 }}>
+                  LLM · 答案生成
                 </div>
-              ))}
+                <div style={{ fontSize: 10, color: 'var(--amber)', fontFamily: "'DM Mono',monospace", background: 'rgba(251,191,36,.07)', borderRadius: 4, padding: '3px 6px' }}>
+                  {ragStatus.llm_model || 'llama-3.3-70b-versatile'}
+                </div>
+              </div>
+
+              {/* 嵌入向量模型 */}
+              <div style={{ padding: '4px 0 6px', borderBottom: '1px solid var(--border)' }}>
+                <div style={{ fontSize: 9, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.5px', marginBottom: 3 }}>
+                  Embedding · 語意檢索
+                </div>
+                <div style={{ fontSize: 10, color: 'var(--muted2)', fontFamily: "'DM Mono',monospace", background: 'var(--surface)', borderRadius: 4, padding: '3px 6px', border: '1px solid var(--border)' }}>
+                  {ragStatus.embed_model || ragStatus.model?.split('/').pop() || 'mpnet-base-v2'}
+                </div>
+              </div>
+
+              {/* 已載入法規 */}
+              <div style={{ marginTop: 4 }}>
+                {(ragStatus.laws_loaded || []).map(law => (
+                  <div key={law} style={{ fontSize: 10.5, color: 'var(--muted2)', padding: '3px 0', display: 'flex', gap: 5 }}>
+                    <span style={{ color: 'var(--green)' }}>✓</span> {law}
+                  </div>
+                ))}
+              </div>
             </>
           ) : (
             <div style={{ fontSize: 11, color: 'var(--muted)', textAlign: 'center', padding: '8px 0' }}>
