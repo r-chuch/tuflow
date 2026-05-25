@@ -65,6 +65,7 @@ export default function ChatScene() {
           role: 'ai',
           text: res.answer,
           lawRefs: res.law_refs || [],
+          sources: res.sources || [],
           confidence: res.confidence,
           suggestedAction: res.suggested_action,
         }

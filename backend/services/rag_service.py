@@ -16,7 +16,7 @@ from backend.config import get_settings
 from backend.llm.embedder import embed_query, embed_batch
 from backend.llm.wrapper import chat_json
 from backend.llm.prompts import RAG_SYSTEM, rag_query_user
-from backend.models.rag import LawRef, RAGResponse
+from backend.models.rag import LawRef, RAGSource, RAGResponse
 from backend.database import get_connection
 
 _settings = get_settings()
@@ -190,8 +190,9 @@ def query(question: str, top_k: int = 5) -> RAGResponse:
         include=["documents", "metadatas", "distances"],
     )
 
-    docs  = results["documents"][0]
-    metas = results["metadatas"][0]
+    docs      = results["documents"][0]
+    metas     = results["metadatas"][0]
+    distances = results["distances"][0]
 
     # 組裝 context
     context = "\n\n".join(docs)
@@ -214,6 +215,23 @@ def query(question: str, top_k: int = 5) -> RAGResponse:
         for r in raw_refs
     ]
 
+    # 建立 sources：ChromaDB 實際檢索到的原始條文段落
+    sources = []
+    for doc, meta, dist in zip(docs, metas, distances):
+        # 去除【法規名稱 條文號】標頭，只保留純條文內容
+        if "\n" in doc:
+            full_text = doc.split("\n", 1)[1].strip()
+        else:
+            full_text = doc.strip()
+        sources.append(RAGSource(
+            law_name    = meta.get("law_name", ""),
+            article_num = meta.get("article_num", ""),
+            full_text   = full_text,
+            article_type= meta.get("article_type"),
+            authority   = meta.get("authority"),
+            similarity  = round(1.0 - dist, 3),  # cosine distance → similarity
+        ))
+
     # 存入問答記錄
     import json
     session_id = str(uuid.uuid4())
@@ -233,6 +251,7 @@ def query(question: str, top_k: int = 5) -> RAGResponse:
     return RAGResponse(
         answer           = llm_result.get("answer", ""),
         law_refs         = law_refs,
+        sources          = sources,
         confidence       = llm_result.get("confidence", "medium"),
         suggested_action = llm_result.get("suggested_action"),
         session_id       = session_id,

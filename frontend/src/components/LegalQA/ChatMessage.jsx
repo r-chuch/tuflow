@@ -4,7 +4,7 @@
 import { LawRefList } from './LawCitation'
 
 export default function ChatMessage({ message }) {
-  const { role, text, lawRefs, confidence, suggestedAction, isTyping } = message
+  const { role, text, lawRefs, sources, confidence, suggestedAction, isTyping } = message
   const isUser = role === 'user'
 
   return (
@@ -55,7 +55,7 @@ export default function ChatMessage({ message }) {
         </div>
 
         {/* 法條引用清單 */}
-        {!isUser && lawRefs && <LawRefList lawRefs={lawRefs} />}
+        {!isUser && lawRefs && <LawRefList lawRefs={lawRefs} sources={sources || []} />}
 
         {/* 建議動作 */}
         {!isUser && suggestedAction && (
