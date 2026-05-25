@@ -506,10 +506,10 @@ python -m backend.scripts.ingest_laws
 
 **原因**：後端未啟動，前端自動切換到離線 Demo 模式（顯示預設資料）。
 
-**解決**：確認後端已在 port 8000 啟動：
+**解決**：確認後端已在 port 8001 啟動：
 ```powershell
 # 確認後端健康狀態
-Invoke-RestMethod http://localhost:8000/health
+Invoke-RestMethod http://localhost:8001/health
 ```
 
 ---
@@ -543,7 +543,7 @@ pip install --upgrade reportlab
 **解決**：啟動後端前設定環境變數：
 ```powershell
 $env:PYTHONIOENCODING = "utf-8"
-uvicorn backend.main:app --reload --port 8000
+uvicorn backend.main:app --reload --port 8001
 ```
 
 ---

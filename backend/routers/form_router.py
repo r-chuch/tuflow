@@ -81,7 +81,7 @@ def api_get_manifest(manifest_id: str):
 
 
 # ── 匯出 PDF ──────────────────────────────────────────────────────
-@router.post("/manifests/{manifest_id}/export-pdf", summary="匯出 PDF")
+@router.get("/manifests/{manifest_id}/export-pdf", summary="匯出 PDF")
 def api_export_pdf(manifest_id: str):
     try:
         pdf_bytes = export_manifest_pdf(manifest_id)
