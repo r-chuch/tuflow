@@ -1,0 +1,47 @@
+# 虛擬環境
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# 環境變數（含 API 金鑰）
+.env
+
+# 資料庫（自動生成）
+data/tuflow.db
+data/chroma_db/
+
+# 前端建置產物
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# 暫存照片
+data/demo/photos/
+data/uploads/
+
+# IDE
+.idea/
+.vscode/
+*.suo
+*.user
+
+# macOS
+.DS_Store
+
+
+# other
+tuflow_v1.html
+PROGRESS.md
+CLAUDE.md
+intro.md
+PLAN.md

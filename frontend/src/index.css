@@ -1,0 +1,168 @@
+/* TuFlow — 完整還原 tuflow_v1.html 深綠色主題 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── CSS Custom Properties（CSS Variables）───────────────────── */
+:root {
+  --bg: #0d1210;
+  --surface: #141a15;
+  --surface2: #1b241c;
+  --surface3: #222e23;
+  --border: #28352a;
+  --border-hi: #3a4f3c;
+
+  --green: #4ade80;
+  --green-soft: #38c068;
+  --green-dim: #254d35;
+  --green-glow: rgba(74, 222, 128, 0.12);
+  --green-glow2: rgba(74, 222, 128, 0.06);
+
+  --amber: #fbbf24;
+  --amber-dim: #5c3608;
+  --amber-glow: rgba(251, 191, 36, 0.1);
+
+  --blue: #60a5fa;
+  --blue-glow: rgba(96, 165, 250, 0.1);
+
+  --text: #deeadf;
+  --text-hi: #ecf4ed;
+  --muted: #5e7360;
+  --muted2: #7a9b7d;
+  --danger: #f87171;
+
+  --nav-h: 56px;
+  --prog-h: 44px;
+}
+
+/* ─── 全域重置 ────────────────────────────────────────────────── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  font-size: 14px;
+}
+
+button { font-family: 'Noto Sans TC', sans-serif; cursor: pointer; }
+
+/* ─── 自訂卷軸 ────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 2px; }
+
+/* ─── Leaflet 地圖主題（深綠濾鏡）──────────────────────────────── */
+.leaflet-tile-pane {
+  filter: brightness(0.65) saturate(0.5) hue-rotate(115deg);
+}
+.leaflet-container {
+  background: #080d08 !important;
+}
+
+/* ─── 動畫 ────────────────────────────────────────────────────── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.35; transform: scale(0.6); }
+}
+
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30%           { transform: translateY(-4px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── 通用元件類別（供 JSX className 使用）──────────────────────── */
+@layer components {
+  /* 按鈕 */
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 px-4 py-1.5
+           rounded-lg text-sm font-semibold cursor-pointer
+           border transition-all duration-150 whitespace-nowrap;
+    border-color: var(--border);
+    color: var(--text);
+    background: var(--surface2);
+  }
+  .btn:hover { border-color: var(--border-hi); color: var(--text-hi); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-primary {
+    background: var(--green);
+    color: #0d1210;
+    border-color: var(--green);
+  }
+  .btn-primary:hover { background: var(--green-soft); border-color: var(--green-soft); }
+
+  .btn-ghost { background: transparent; }
+  .btn-ghost:hover {
+    border-color: var(--green-dim);
+    color: var(--green);
+    background: var(--green-glow);
+  }
+
+  .btn-sm { @apply px-3 py-1 text-xs; }
+  .btn-lg { @apply px-6 py-2.5 text-sm; }
+
+  /* 卡片 */
+  .card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    @apply rounded-lg;
+  }
+
+  /* 標籤（module tag）*/
+  .module-tag {
+    @apply inline-flex items-center gap-1.5 font-mono text-[9px] tracking-widest uppercase;
+    @apply px-2 py-0.5 rounded-sm;
+    color: var(--green);
+    background: var(--green-glow);
+    border: 1px solid var(--green-dim);
+  }
+
+  /* 法條引用高亮 */
+  .law-cite {
+    @apply inline-flex items-center gap-1 font-mono text-[10px] px-1.5 py-px rounded-sm mx-0.5 whitespace-nowrap;
+    color: var(--amber);
+    background: var(--amber-glow);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+  }
+
+  /* 狀態徽章 */
+  .badge-draft {
+    background: var(--amber-glow);
+    border: 1px solid rgba(251, 191, 36, 0.25);
+    color: var(--amber);
+  }
+  .badge-done {
+    background: var(--green-glow);
+    border: 1px solid var(--green-dim);
+    color: var(--green);
+  }
+
+  /* 表單輸入 */
+  .form-input {
+    @apply w-full rounded-lg px-3 py-2 text-[13px] outline-none transition-colors duration-200;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-hi);
+  }
+  .form-input::placeholder { color: var(--muted); }
+  .form-input:focus { border-color: var(--green-dim); }
+  .form-input:read-only {
+    background: var(--surface3);
+    color: var(--muted2);
+    cursor: default;
+  }
+}
