@@ -10,10 +10,10 @@ const TAOYUAN_CENTER = [24.993, 121.310]
 
 // 圓點顏色設定
 const MARKER_COLORS = {
-  supply: '#4ade80',   // 綠色：供方
-  demand: '#60a5fa',   // 藍色：需方
-  dump:   '#fbbf24',   // 琥珀：土資場
-  selected: '#4ade80', // 選中（高亮）
+  supply:   '#ef4444',   // 紅色：供方（出土）
+  demand:   '#4ade80',   // 綠色：需方（填土）
+  dump:     '#fbbf24',   // 琥珀：土資場
+  selected: '#ffffff',   // 選中外框
 }
 
 // ── 自動縮放至所有工地 ──────────────────────────────────────────
@@ -51,10 +51,10 @@ export default function LeafletMap({ sites = [], selectedSupplyId, selectedMatch
           key={`line-${i}`}
           positions={[[supplySite.lat, supplySite.lng], [m.lat, m.lng]]}
           pathOptions={{
-            color: i === 0 ? '#4ade80' : '#28352a',
+            color: i === 0 ? '#ef4444' : '#3a2020',
             weight: i === 0 ? 2 : 1,
             dashArray: i === 0 ? null : '4 4',
-            opacity: i === 0 ? 0.9 : 0.4,
+            opacity: i === 0 ? 0.85 : 0.35,
           }}
         />
       ))}
@@ -88,7 +88,7 @@ export default function LeafletMap({ sites = [], selectedSupplyId, selectedMatch
                 minWidth: 160,
               }}>
                 <div style={{ fontWeight: 700, marginBottom: 4 }}>{site.name}</div>
-                <div>角色：{site.role === 'supply' ? '🟢 供方' : site.role === 'demand' ? '🔵 需方' : '🟡 土資場'}</div>
+                <div>角色：{site.role === 'supply' ? '🔴 供方（出土）' : site.role === 'demand' ? '🟢 需方（填土）' : '🟡 土資場'}</div>
                 <div>土質：{site.soil_code || site.soil_type}</div>
                 <div>數量：{site.volume_m3?.toLocaleString()} m³</div>
                 {site.price_per_m3 && <div>單價：NT$ {site.price_per_m3}/m³</div>}

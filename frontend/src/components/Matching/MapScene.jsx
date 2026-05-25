@@ -231,8 +231,8 @@ export default function MapScene() {
             圖例
           </div>
           {[
-            { color: '#4ade80', label: '供方（出土）' },
-            { color: '#60a5fa', label: '需方（填土）' },
+            { color: '#ef4444', label: '供方（出土）' },
+            { color: '#4ade80', label: '需方（填土）' },
             { color: '#fbbf24', label: '土資場' },
           ].map(item => (
             <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 11, color: 'var(--text)', marginBottom: 4 }}>
