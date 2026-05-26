@@ -46,3 +46,6 @@ CLAUDE.md
 intro.md
 PLAN.md
 t_rag_test.py
+node_modules/
+other/
+.claude/
